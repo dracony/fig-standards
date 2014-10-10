@@ -105,5 +105,14 @@ interface TaskDefinitionInterface
      * @return string
      */
     public function setName();
+
+    /**
+     * Configures the Task
+     *
+     * This method should call setName, if not set in DI.
+     * This method should call setDescription.
+     * This method should call setParameter
+     */
+    public function configure();
 }
 ```
