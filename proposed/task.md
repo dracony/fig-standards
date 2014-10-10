@@ -56,9 +56,9 @@ interface OutputInterface
 }
 ```
 
-### TaskInterface
+### TaskDefinitionInterface
 
-TaskInterface defines an API for configuring and running tasks.
+TaskDefinitionInterface defines an API for configuring and running tasks.
 
 ```php
 <?php
@@ -68,10 +68,10 @@ namespace Psr\Task;
 /**
  * A specific executable action
  */
-interface TaskInterface
+interface TaskDefinitionInterface
 {
     /**
-     * Executes the task.
+     * Executes the TaskDefinitionInterface.
      * Can throw exceptions on failure.
      *
      * @param OutputInterface $output Output stream
@@ -81,7 +81,7 @@ interface TaskInterface
     public function run(OutputInterface $output);
     
     /**
-     * Sets a configuration parameter.
+     * Sets a configuration parameter for the TaskDefinitionInterface.
      *
      * @param string $name  Name of the configuration parameter
      * @param mixed  $value Parameter value
@@ -91,7 +91,8 @@ interface TaskInterface
     public function setParameter($name, $value);
     
     /**
-     * Returns the name of the type, used in the TaskRepository, when searching for a task to use.
+     * Returns the type of the TaskDefinitionInterface.
+     * Used in the TaskRepository, when searching for a task to use.
      *
      * @return string
      */
