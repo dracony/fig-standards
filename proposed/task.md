@@ -107,7 +107,7 @@ interface TaskDefinitionInterface
     public function setName();
 
     /**
-     * Configures the Task
+     * Configures the TaskDefinitionInterface
      *
      * This method should call setName, if not set in DI.
      * This method should call setDescription.
