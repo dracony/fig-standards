@@ -91,19 +91,19 @@ interface TaskDefinitionInterface
     public function setParameter($name, $value);
     
     /**
-     * Returns the type of the TaskDefinitionInterface.
+     * Returns the name of the TaskDefinitionInterface.
      * Used in the TaskRepository, when searching for a task to use.
      *
      * @return string
      */
-    public function getType();
+    public function getName();
     
     /**
-     * Sets the type of the TaskDefinitionInterface.
+     * Sets the name of the TaskDefinitionInterface.
      * Should be configurable
      *
      * @return string
      */
-    public function setType();
+    public function setName();
 }
 ```
