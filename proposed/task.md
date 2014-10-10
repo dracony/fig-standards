@@ -72,6 +72,7 @@ interface TaskInterface
 {
     /**
      * Executes the task.
+     * Can throw exceptions on failure.
      *
      * @param OutputInterface $output Output stream
      *
@@ -88,6 +89,12 @@ interface TaskInterface
      * @return void
      */
     public function setParameter($name, $value);
-
+    
+    /**
+     * Returns the name of the type, used in the TaskRepository, when searching for a task to use.
+     *
+     * @return string
+     */
+    public function getType();
 }
 ```
