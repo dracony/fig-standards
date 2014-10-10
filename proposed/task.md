@@ -97,5 +97,13 @@ interface TaskDefinitionInterface
      * @return string
      */
     public function getType();
+    
+    /**
+     * Sets the type of the TaskDefinitionInterface.
+     * Should be configurable
+     *
+     * @return string
+     */
+    public function setType();
 }
 ```
