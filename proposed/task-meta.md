@@ -25,53 +25,53 @@ It will also attempt to make these tasks easily portable and pluggable, but this
 * Provide the interface for runnable tasks
 * Keep the interfaces as minimal as possible.
 * Attempt at achieving a pluggable interface allowing for easier integration. This is not the primary goal though.
+* Task Runner Examples: Bldr, TaskPHP, Robo, Phing
 
 ## 3.2 Non-Goals
 
 * This proposal does not define any rules for how the tasks are to be configured or grouped into jobs.
+* Examples of things which this PSR does not cover: Symfony2 commands, Yii commands
 
 4. Design Decisions
 -------------------
 
-Right now we have a number of task runners that already share similarities in their API.
-Further standardizing it will allow tasks to become reusable across all such implementations.
+## Task execution
 
-These are the classes used as a source of inspiration:
+It is obvious that tasks should be runnable, hence a TaskInterface::run() method is proposed.
 
-* https://github.com/phingofficial/phing/blob/master/classes/phing/Task.php
-* https://github.com/bldr-io/bldr/blob/master/src/Model/Task.php
-* https://github.com/Codegyre/Robo/blob/master/src/Task/Shared/TaskInterface.php
-* https://github.com/bldr-io/bldr/blob/master/src/Registry/TaskRegistry.php
-* http://symfony.com/doc/current/components/console/introduction.html
+## Output
 
-It seems apparent that the tasks also need some standardized way of outputting data. 
-Instead on relying on 'echo' and library specific implementations this proposal will try adopting
-the Symfony2 Command way of passing an OutputInterface
+To show progress to the user tasks need to have a way to output information. These are different ways of achieving this that have been considered:
 
-## 4.1 Important questions
+* **Standard output** using php ouput functions like echo. This is the most simple approach, but it relies on a global output stream and thus limits areas in which it can be applied. For example if your task runner library should email you with the whole task log after the job is complete it would have to rely on output buffering to catch the output.
+* **Returning a message** string. This method avoids the pitfals of the previous one but since the result is returned at the end of the function call this approach would strip all of the interactivity of the process. Especially for tasks that would take a long time to run and would have a lot of intermediatery messages like: "Connecting to host", "Logging in", "Running command", "Cleaning up". Ideally these messages should be delivered instantly to the user instead at the end in bulk.
+* **Yielding messages** line by line. A slightly modified version of the ebove would yield message lines one by one. This would allow for interactivity, but is not available in older PHP versions. This approach would not allow appending data to the current line if implemented like that.
+* **Output interface** with functions like write() and writeln() seems the both the easiest to understand and implement. That's why it is currently chosen.
 
-* Do we need OutputInterface included in this PSR ?
-* What about InputInterface ?
-* Should run() return anything ?
-* Do we need an interfce for a TaskRepository ? It might be useful for example if one of the tasks depends on
-a different task and would like to run it internally. But this might be too convoluted.
+## Output formatting
 
-## 4.2 Reducting configuration redundancy
+A lot of times we would like to add some formatting to task output, like nicely formatting a table. This would be possible by adding relevant methods to the OutputInterface. Ultimately after looking at some existing tasks in popular libraries it seems that these aren't used that often. In that case it is better to allow tasks to do formatting themselves. Especially since it's very easy for a Task to depend on some string formatter using DI and the write that strig to the OutputInterface.
 
-Now I have a more ambitious idea (wild dreams ahead):
+## Configuration
 
-The problem with this setup, and with many task runner libraries out there is that they often suffer from configuration duplication. Lets say in your cron job configuration you need to:
+Most of the tasks require at least some parameters to operate ( e.g. FTP credentials, source directory and destination directory for a task dealing with FTP uploads). Here are the considered approaches to pass these parameters to a Task:
 
-1. Copy files to remote server over FTP
-2. Run a SSH command on that server
-3. Copy some more files over FTP
+* **As an array parameter to run()** representing a key=>value pairs of options. In the event that the task would need to be run twice with slightly different parameters ( e.g. uploading two directories to an FTP server one by one ) such an approach would require duplicate parameters to be present both times it is ran ( FTP login and password would have to be passed for both first and second call ).
+* **Using setParameter($key, $value)** would allow overriding single parameters, and thus solve the issue described above.
 
-For both steps `1` and `3` you would have to define your FTP login credentials, thus getting some redundancy.
+## Error handling
 
-What if we could separate task configuration ( which would be FTP credentials ) from the actual task Command ( copy this file over there ).
-This would require a CommandInterface and changing TaskInterface::run signature to TaskInterface::run(OutputInterface $output, CommandInterface $command)
+Suggested ways of error handling were:
 
-## 4.3 Implementation in popular libraries
+* **Using return codes** for errors, similar to CLI apps. An integer error carries much less information to the user than a string message. A user might of course first output the error through OutputInterface and then return an error code. But then there would be no way to distinguish between regular messages in the outout interface and error messages. Which might be desireable for for example formatting ( a task runner might like to output errors in a different color or to a different stream). Each talk would have tto have a try-catch block to return an error code when an exception happens.
+* **Using exceptions for errors** seems the most logical, as it clearly tells the error message to the task library that ran the test. This approach doesn't require a try-catch black inside the task code. The running library can easily wrap calls to run() inside such a block
+
+## Parameter validation
+
+The need for a separate validate() method was debated. Such a method would check whether currently set parameters are sufficient and valid. But since a task would have to run validate() internally as the first step of run() to check that parameters are correct it seems there is no need for this method to be called twice. So parameter validation should be done inside run() and throw an exception if something is wrong with them.
+
+5. Implementation in popular libraries
+--------------------------------------
 
 This section describes steps that would have to be taken to make popular libraries comply with this PSR.
 The purpose is to show how easily this could be done.
@@ -80,17 +80,6 @@ The purpose is to show how easily this could be done.
 
  * Task::main() would have to be renamed to Task::run, or ::run could act as a proxy for ::main for backwards compatibility
  * When setting configuration values instead of setSourceDir('/') setProperty('sourceDir', '/') would be called
-
-### Symfony 2 Commands
-
- * Command::execute would have to be renamed to Command::run
- * Symfony2 commands serve a different purpose alltogether, being standalone actions not meant as "builidingc blocks" for jobs. So I guess they are actually out of the scope of this PSR. However they can be easily made to comply with TaskInterface and thus become interpolable.
-
-### Yii
-
-Yii 2 console commands are actually controllers and as with Symfony2 present standalone complete actions, not "building block" style like Phing. So the PSR wouldnt apply here
-
-Yii 1 however has a CConsoleCommand class which already has a ::run($args) method. The only diference between it and the PSR is that the arguments are passed separately instead passed to ::run. This would allow any PSR compliant TaskInterface task to instantly become a valid Yii Command.
 
 ### Bldr
 
