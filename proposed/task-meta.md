@@ -5,17 +5,14 @@ Task Meta Document
 1. Summary
 ----------
 
-Almost every framework includes a toolset for running background tasks, cron jobs, deployment and more.
-These usually provide a set of predefined tasks that are configured and combined to achieve some specific goal.
-Common examples of such tasks would be copying a file on the filesystem, executing a database query, etc.
-Each such library provides its own set of guidelines on how new tasks should be added to its disposal,
-thus forcing the developer to creating multiple adapters or supporting only a limited subset of libraries.
+Automation tools allow developers to setup frequently used processes such as building, deployment and testing.
+They feature sets of predefined tasks which are used as building blocks for process definition.
+Examples of such building blocks might be copying a file on the filesystem, executing a database query, running a command on a remote server, etc. Since these are pretty common on across libraries this leads to redundancy in task implementation also forcing 3rd-party developers to create multiple adapters or supporting only a limited subset ofautomation tools.
 
-2. Why Bother?
+2. Aim
 --------------
 
-This proposal presents a simple API that task runner libraries might expect the tasks to implement.
-It will also attempt to make these tasks easily portable and pluggable, but this is not the primary goal.
+This proposal aims to create a minimal API to allow task implementations to be reused in multiple automation toolsets.
 
 3. Scope
 --------
@@ -24,7 +21,6 @@ It will also attempt to make these tasks easily portable and pluggable, but this
 
 * Provide the interface for runnable tasks
 * Keep the interfaces as minimal as possible.
-* Attempt at achieving a pluggable interface allowing for easier integration. This is not the primary goal though.
 * Task Runner Examples: Bldr, TaskPHP, Robo, Phing
 
 ## 3.2 Non-Goals
@@ -69,31 +65,4 @@ Suggested ways of error handling were:
 ## Parameter validation
 
 The need for a separate validate() method was debated. Such a method would check whether currently set parameters are sufficient and valid. But since a task would have to run validate() internally as the first step of run() to check that parameters are correct it seems there is no need for this method to be called twice. So parameter validation should be done inside run() and throw an exception if something is wrong with them.
-
-5. Implementation in popular libraries
---------------------------------------
-
-This section describes steps that would have to be taken to make popular libraries comply with this PSR.
-The purpose is to show how easily this could be done.
-
-### Phing
-
- * Task::main() would have to be renamed to Task::run, or ::run could act as a proxy for ::main for backwards compatibility
- * When setting configuration values instead of setSourceDir('/') setProperty('sourceDir', '/') would be called
-
-### Bldr
-
-Is mostly compliant anyway. All it needs is for CallInterface to extend TaskInterface, and some tweaks with passing parameters.
-There is no need to change internal nomenclature and rename CallInterface to TaskInterface internally.
-
-### Robo
-
-Robos' TaskInterface already defines ::run(), but would be required to also pass OutputInterface to it, instead of relying on static Runner::getPrinter() call
-
-### Task
-
-Realies on Symfony2 Command so most of the things i said about Symfony 2 apply here too.
-
-
-
 
