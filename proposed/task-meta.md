@@ -44,6 +44,11 @@ To show progress to the user tasks need to have a way to output information. The
 * **Yielding messages** line by line. A slightly modified version of the ebove would yield message lines one by one. This would allow for interactivity, but is not available in older PHP versions. This approach would not allow appending data to the current line if implemented like that.
 * **Output interface** with functions like write() and writeln() seems the both the easiest to understand and implement. That's why it is currently chosen.
 
+## Injecting OutputInterface
+
+There was discussion on whether OutputInterface should be injected separately or passed as a run() method parameter.
+Making it a run parameter makes it clearly visible that the OutputInterface is not optional. 
+
 ## Output formatting
 
 A lot of times we would like to add some formatting to task output, like nicely formatting a table. This would be possible by adding relevant methods to the OutputInterface. Ultimately after looking at some existing tasks in popular libraries it seems that these aren't used that often. In that case it is better to allow tasks to do formatting themselves. Especially since it's very easy for a Task to depend on some string formatter using DI and the write that strig to the OutputInterface.
