@@ -74,7 +74,7 @@ interface TaskInterface
      * Executes the task.
      *
      * @param OutputInterface $output Output stream
-     *
+     * 
      * @return void
      */
     public function run(OutputInterface $output);
@@ -91,3 +91,7 @@ interface TaskInterface
 
 }
 ```
+
+## Error handling
+
+If an error occurs during task execution the TaskInterface::run() method should throw an exception containing the error message. Automation libraries SHOULD be able to handle these gracefully and output the error message to the user.
