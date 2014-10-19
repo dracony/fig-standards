@@ -26,7 +26,6 @@ This proposal aims to create a minimal API to allow task implementations to be r
 ## 3.2 Non-Goals
 
 * This proposal does not define any rules for how the tasks are to be configured or grouped into jobs.
-* Examples of things which this PSR does not cover: Symfony2 commands, Yii commands
 
 4. Design Decisions
 -------------------
