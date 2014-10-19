@@ -5,13 +5,15 @@ Automation tools allow developers to setup frequently used processes such as bui
 They feature sets of predefined tasks which are used as building blocks for process definition.
 Examples of such building blocks might be copying a file on the filesystem, executing a database query, running a command on a remote server, etc. Since these are pretty common on across libraries this leads to redundancy in task implementation also forcing 3rd-party developers to create multiple adapters or supporting only a limited subset ofautomation tools.
 
-This proposal aims to create a minimal API to allow task implementations to be reused in multiple automation toolsets.
-
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
 interpreted as described in [RFC 2119].
 
 [RFC 2119]: http://www.ietf.org/rfc/rfc2119.txt
+
+## Goal
+
+This proposal aims to create a minimal API to allow task implementations to be reused in multiple automation toolsets.
 
 ## Specification
 
@@ -21,7 +23,7 @@ A task is an atomic optionally configurable action. Automation libraries provide
 
 ### OutputInterface
 
-OutputInterface defines a minimal output stream that MUST be used for writing messages by a task.
+OutputInterface defines a minimal output stream that MUST be used for writing messages by a task. If the task requires additional formatting capabilities it SHOULD handle those itself or make use of some injected formatter.
 
 ```php
 <?php
@@ -56,7 +58,7 @@ interface OutputInterface
 
 ### TaskInterface
 
-TaskInterface defines an API for configuring and running tasks.
+TaskInterface defines an API for configuring and running tasks. Paramter validation MUST be triggered internally by the run() method. Additionaly a task MAY validate parameters as they are passed to setParameter.
 
 ```php
 <?php
