@@ -1,13 +1,11 @@
 Task interfaces
 =======================
 
-Almost every framework includes a toolset for running background tasks, cron jobs, deployment and more.
-These usually provide a set of predefined tasks that are configured and combined to achieve some specific goal.
-Common examples of such tasks would be copying a file on the filesystem, executing a database query, etc
-Each such library provides its own set of guidelines on how new tasks should be added to its disposal,
-thus forcing the developer to creating multiple adapters or supporting only a limited subset of libraries.
+Automation tools allow developers to setup frequently used processes such as building, deployment and testing.
+They feature sets of predefined tasks which are used as building blocks for process definition.
+Examples of such building blocks might be copying a file on the filesystem, executing a database query, running a command on a remote server, etc. Since these are pretty common on across libraries this leads to redundancy in task implementation also forcing 3rd-party developers to create multiple adapters or supporting only a limited subset ofautomation tools.
 
-This proposal presents a simple API for defining tasks, thus making them easily portable.
+This proposal aims to create a minimal API to allow task implementations to be reused in multiple automation toolsets.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
@@ -17,13 +15,13 @@ interpreted as described in [RFC 2119].
 
 ## Specification
 
-A task is an atomic optionally configurable action. Task runner libraries provide means for combining and configuring these tasks to achieve some defined goal.
+A task is an atomic optionally configurable action. Automation libraries provide means for combining and configuring these tasks to automate processes.
 
 ## Interfaces
 
 ### OutputInterface
 
-OutputInterface defines a minimal output stream that SHOULD be used for writing messages by a task.
+OutputInterface defines a minimal output stream that MUST be used for writing messages by a task.
 
 ```php
 <?php
