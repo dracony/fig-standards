@@ -73,3 +73,21 @@ The need for a separate validate() method was debated. Such a method would check
 ## User Input
 
 The need for an InputInterface was also discussed. It would provide a way to provide sensitive information like passwords. Such an interface doesn't make much sense when running from a non-CLI environment. But such behavior could be easily done in the automation tool itself. The tool would provide some way of telling it that some additional parameters must be acquired from the user before running the task. These parameters would be passed in the usual setParameter() way.
+
+
+5. People
+---------
+
+### 5.1 Editor(s)
+
+* Roman Tsiupa
+
+### 5.2 Sponsors
+
+* Pádraic Brady (coordinator)
+* Alexander Makarov
+
+### 5.3 Contributors
+
+* Aaron Scherer
+* Mike Fisher
