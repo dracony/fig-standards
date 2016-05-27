@@ -181,3 +181,18 @@ interface UriFactoryInterface
 }
 ```
 
+### 2.7 HttpFactoryInterface
+
+```php
+namespace Psr\Http\Message;
+
+interface HttpFactoryInterface extends RequestFactoryInterface,
+    ResponseFactoryInterface,
+    ServerRequestFactoryInterface,
+    StreamFactoryInterface,
+    UploadedFileFactoryInterface,
+    UriFactoryInterface
+{
+    
+}
+```
